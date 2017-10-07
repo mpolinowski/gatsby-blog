@@ -12,22 +12,39 @@ const IndexPage = ({data}) => (
     <br/><br/><br/><br/>
 
     <h2>Index</h2>
-    {data.allMarkdownRemark.edges.map(post => (
-      <div className="table">
-        <h5><br/>{post.node.frontmatter.date}</h5>
-        <Link
-          key={post.node.id}
-          to={post.node.frontmatter.path}>
-          {post.node.frontmatter.title}<br/>
-        </Link>
-      </div>
-    ))}
+    <table>
+      <thead>
+        <tr>
+          <th>Date</th>
+          <th>Link</th>
+        </tr>
+      </thead>
+      <tbody>
+      {data.allMarkdownRemark.edges.map(post => (
+        <tr key={post.node.id}>
+          <td>
+            {post.node.frontmatter.date}
+          </td>
+          <td>
+            <Link
+              to={post.node.frontmatter.path}>
+              {post.node.frontmatter.title}
+            </Link>
+          </td>
+        </tr>
+      ))}
+      </tbody>
+    </table>
   </div>
 )
 
 export const pageQuery = graphql`
   query IndexQuery {
-    allMarkdownRemark(limit: 10, sort: {fields: [frontmatter___date], order: DESC}) {
+    allMarkdownRemark(
+      limit: 10
+      sort: {fields: [frontmatter___date], order: DESC}
+      filter: { frontmatter: { published: {eq: true} }}
+    ) {
       edges {
         node {
           id
@@ -35,6 +52,7 @@ export const pageQuery = graphql`
             path
             title
             date
+            published
           }
         }
       }

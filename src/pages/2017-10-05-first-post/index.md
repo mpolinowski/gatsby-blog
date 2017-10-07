@@ -1,7 +1,8 @@
 ---
 path: '/first-post'
 title: 'First Blog Post'
-date:   "2017-10-05"
+date:   '2017-10-05'
+published: true
 ---
 
 ## Hello from Markdown!

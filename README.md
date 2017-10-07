@@ -13,10 +13,10 @@ This is the second mini-project that I am going to use Gatsby in - check out the
 01. [gatsby-source-filesystem](#01-gatsby-source-filesystem)
 02. [gatsby-transformer-remark](#02-gatsby-transformer-remark)
 03. [Creating a first Blog Post](#03-creating-a-first-blog-post)
-04. []()
-05. []()
-06. []()
-07. []()
+04. [Creating an Index Page](#04-creating-an-index-page)
+05. [Filters & Sorting With GraphQL](#05-filters-&-sorting-with-graphql)
+06. [Static Serve](06-static-serve)
+08. []()
 
 
 
@@ -243,7 +243,9 @@ This query shows the latest 10 Markdown posts in descending order - let's add it
 ```js
 export const pageQuery = graphql`
   query IndexQuery {
-    allMarkdownRemark(limit: 10, sort: {fields: [frontmatter___date], order: DESC}) {
+      allMarkdownRemark(limit: 10
+      sort: {fields: [frontmatter___date], order: DESC}
+    ) {
       edges {
         node {
           id
@@ -275,22 +277,97 @@ const IndexPage = ({data}) => (
     <br/><br/><br/><br/>
 
     <h2>Index</h2>
-    {data.allMarkdownRemark.edges.map(post => (
-      <div className="table">
-        <h5><br/>{post.node.frontmatter.date}</h5>
-        <Link
-          key={post.node.id}
-          to={post.node.frontmatter.path}>
-          {post.node.frontmatter.title}<br/>
-        </Link>
-      </div>
-    ))}
+    <table>
+      <thead>
+        <tr>
+          <th>Date</th>
+          <th>Link</th>
+        </tr>
+      </thead>
+      <tbody>
+      {data.allMarkdownRemark.edges.map(post => (
+        <tr key={post.node.id}>
+          <td>
+            {post.node.frontmatter.date}
+          </td>
+          <td>
+            <Link
+              to={post.node.frontmatter.path}>
+              {post.node.frontmatter.title}
+            </Link>
+          </td>
+        </tr>
+      ))}
+      </tbody>
+    </table>
   </div>
 )
 ```
 
 
 ![](./gatsby_04.png)
+
+
+
+## 05 Filters & Sorting With GraphQL
+
+We already sorted our results by date and name in the examples above. Now let's add another value to our frontmatter, to decide whether a post is a draft or should already be shown as published. Set the first post to *published: true* and the second one to *published: false* :
+
+```
+---
+path: '/second-post'
+title: 'Second Blog Post'
+date:   "2017-10-07"
+published: false
+---
+```
+
+Now we just need to configure our GraphQL query to only show post where *published* is set to true:
+
+```
+export const pageQuery = graphql`
+  query IndexQuery {
+    allMarkdownRemark(
+      limit: 10
+      sort: {fields: [frontmatter___date], order: DESC}
+      filter: { frontmatter: { published: {eq: true} }}
+    ) {
+      edges {
+        node {
+          id
+          frontmatter {
+            path
+            title
+            date
+            published
+          }
+        }
+      }
+    }
+  }
+`
+```
+
+
+
+## 06 Static Serve
+
+To serve our website we can use the command:
+
+```
+gatsby build
+```
+
+This will build a static version of our React app inside /public. Just upload it to a webserver or to GitHub Pages and you are good to go.
+
+**After** building the static page, you can also use the command:
+
+```
+gatsby serve
+```
+
+That - unlike our development environment - fires up the webpack server in production mode - that means the files that are served, are the optimized files from the */public* directory! You can access this version on *http://localhost:9000*
+
 
 
 
