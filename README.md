@@ -14,8 +14,8 @@ This is the second mini-project that I am going to use Gatsby in - check out the
 02. [gatsby-transformer-remark](#02-gatsby-transformer-remark)
 03. [Creating a first Blog Post](#03-creating-a-first-blog-post)
 04. [Creating an Index Page](#04-creating-an-index-page)
-05. [Filters & Sorting With GraphQL](#05-filters-&-sorting-with-graphql)
-06. [Static Serve](06-static-serve)
+05. [Filters & Sorting With GraphQL](#05-filters--sorting-with-graphql)
+06. [Static Serve](#06-static-serve)
 08. []()
 
 
