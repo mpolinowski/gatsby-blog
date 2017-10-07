@@ -163,7 +163,7 @@ exports.createPages = ({boundActionCreators, graphql}) => {
   const postTemplate = path.resolve('src/templates/post.js');
 
   return graphql(`{
-    allMarkdownRemark(sort: { fields: [frontmatter___title], order: DESC}) {
+    allMarkdownRemark {
       edges {
         node {
           html
@@ -192,27 +192,109 @@ exports.createPages = ({boundActionCreators, graphql}) => {
 }
 ```
 
-
-Optional sorting, limiting parameters for the GraphQL query - siehe auch [1](https://github.com/graphql/graphiql/issues/587), [2](https://gist.github.com/DSchau/86ee9288b05d236dada81148f66db8db):
-
-
-```js
-allMarkdownRemark(sort: { fields: [frontmatter___title], order: DESC})
-
-allMarkdownRemark(sort: { order: DESC, fields: [frontmatter___date] })
-
-allMarkdownRemark(limit: 1000)
-```
-
-
-
+Save and restart your app - then open **http://localhost:8000/first-post** inside your web browser:
 
 
 ![](./gatsby_02.png)
 
 
 
-.
+## 04 Creating an Index Page
+
+Now that we have a blog post (you can duplicate the first one a couple of times - changing the title, path and date), we will need an index page with a collection of links for all our posts. We will use the same GraphQL query used above to create this list.
+
+We can add optional sorting, limiting parameters for the GraphQL query - see also [1](https://github.com/graphql/graphiql/issues/587), [2](https://gist.github.com/DSchau/86ee9288b05d236dada81148f66db8db):
+
+
+```js
+allMarkdownRemark(sort: { fields: [frontmatter___title], order: ASC})
+
+allMarkdownRemark(sort: { fields: [frontmatter___date], order: DESC })
+
+allMarkdownRemark(limit: 1000)
+```
+
+Gatsby comes with the GraphiQL debugger that allows us to test queries before we add them to our page - the debugger is running under: **http://localhost:8000/___graphql**
+
+
+![](./gatsby_03.png)
+
+
+
+```
+{
+  allMarkdownRemark(limit: 10, sort: {fields: [frontmatter___date], order: DESC}) {
+    edges {
+      node {
+        frontmatter {
+          path
+          title
+          date
+        }
+      }
+    }
+  }
+}
+```
+
+This query shows the latest 10 Markdown posts in descending order - let's add it to our index page */src/pages/index.js*. First we add the GraphQL query, below the \<IndexPage /\> component:
+
+
+```js
+export const pageQuery = graphql`
+  query IndexQuery {
+    allMarkdownRemark(limit: 10, sort: {fields: [frontmatter___date], order: DESC}) {
+      edges {
+        node {
+          id
+          frontmatter {
+            path
+            title
+            date
+          }
+        }
+      }
+    }
+  }
+`
+```
+
+
+Then we inject the data from that query into the \<IndexPage /\> component and loop through it to generate our index:
+
+
+```js
+const IndexPage = ({data}) => (
+  <div>
+    <h1>Hi people</h1>
+    <p>Welcome to your new Gatsby site.</p>
+    <p>Now go build something great.</p>
+    <br/><br/>
+
+    <Link to="/page-2/">Go to page 2</Link>
+    <br/><br/><br/><br/>
+
+    <h2>Index</h2>
+    {data.allMarkdownRemark.edges.map(post => (
+      <div className="table">
+        <h5><br/>{post.node.frontmatter.date}</h5>
+        <Link
+          key={post.node.id}
+          to={post.node.frontmatter.path}>
+          {post.node.frontmatter.title}<br/>
+        </Link>
+      </div>
+    ))}
+  </div>
+)
+```
+
+
+![](./gatsby_04.png)
+
+
+
+
 
 
 

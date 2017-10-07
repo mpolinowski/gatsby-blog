@@ -6,7 +6,7 @@ exports.createPages = ({boundActionCreators, graphql}) => {
   const postTemplate = path.resolve('src/templates/post.js');
 
   return graphql(`{
-    allMarkdownRemark(sort: { fields: [frontmatter___title], order: DESC}) {
+    allMarkdownRemark {
       edges {
         node {
           html
